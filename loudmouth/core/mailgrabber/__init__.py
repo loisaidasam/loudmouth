@@ -1,0 +1,3 @@
+
+class MailGrabberException(Exception):
+	pass

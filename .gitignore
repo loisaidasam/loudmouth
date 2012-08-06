@@ -1,0 +1,15 @@
+# Global ish
+!.gitignore
+
+# Python ish
+*.pyc
+
+# Eclipse bullshit
+.project
+.pydevproject
+
+# Deployment bullshit
+loudmouth.pid
+
+# Project stuff
+loudmouth/localsettings.py

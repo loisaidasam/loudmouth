@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_js %}
+<script src="{{ STATIC_URL }}js/default.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block head_js_ready %}
+default_ready();
+{% endblock %}
+
+{% block content %}
+<h2>The Rundown</h2>
+{% if show_all %}
+<a href="{% url index %}">Show Unjudged Emails Only</a> | Show All Emails
+{% else %}
+Show Unjudged Emails Only | <a href="{% url index %}?show_all=1">Show All Emails</a>
+{% endif %}
+<br /><br />
+
+{% for email in emails %}
+<table>
+	<tr><td>{{ email.title }}</td></tr>
+	<tr><td>{{ email.author }}</td></tr>
+	<tr><td>{{ email.timestamp }}</td></tr>
+	<tr><td id="email_{{ email.id }}" class="email_td"><div id="email_{{ email.id }}_brief">{{ email.brief }}<br />[click to read more]</div><div id="email_{{ email.id }}_summary" class="email_summary"><pre>{{ email.summary }}</pre></div></td></tr>
+	<tr><td><form action="{% url index %}{% if show_all %}?show_all=1{% endif %}" method="post">
+		<input type="hidden" name="email_id" value="{{ email.id }}" />
+		<input id="{{ email.id }}_0" type="radio" name="rating" value="0" {% if email.rating == 0 %} checked="checked"{% endif %} /><label for="{{ email.id }}_0">OK</label> 
+		<input id="{{ email.id }}_10" type="radio" name="rating" value="10" {% if email.rating == 10 %} checked="checked"{% endif %} /><label for="{{ email.id }}_10">Borderline OK</label> 
+		<input id="{{ email.id }}_20" type="radio" name="rating" value="20" {% if email.rating == 20 %} checked="checked"{% endif %} /><label for="{{ email.id }}_20">Useless</label>
+		{% csrf_token %} 
+		<input type="submit" value="Cast Judgement!" />
+		</form></td></tr>
+</table><br /><br />
+{% endfor %}
+{% endblock %}

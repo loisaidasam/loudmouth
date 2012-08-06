@@ -1,0 +1,22 @@
+Loudmouth Django App
+ - for figuring out who the real loudmouths and whiners are!
+
+Quickstart:
+
+1. Use virtualenv and do this: pip install -r requirements.txt
+2. cd loudmouth
+3. cp localsettings.py.template localsettings.py
+4. python manage.py syncdb
+
+
+External resources/references:
+
+- django-registration
+	https://bitbucket.org/ubernostrum/django-registration/src/tip/docs/
+
+- registration_templates:
+	http://devdoodles.wordpress.com/2009/02/16/user-authentication-with-django-registration/
+	https://bitbucket.org/devdoodles/registration_templates
+
+- Django registration without username:
+	http://djangosnippets.org/snippets/686/
