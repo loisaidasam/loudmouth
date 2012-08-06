@@ -8,4 +8,4 @@ class Command(NoArgsCommand):
 	help = 'Flush all emails'
 	
 	def handle_noargs(self, **options):
-		IncomingEmail.flush()
+		IncomingEmail.objects.flush()

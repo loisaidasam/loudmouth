@@ -7,9 +7,11 @@
 # Eclipse bullshit
 .project
 .pydevproject
+.settings
 
 # Deployment bullshit
 loudmouth.pid
 
 # Project stuff
 loudmouth/localsettings.py
+loudmouth/logs/*

@@ -60,7 +60,7 @@ MEDIA_URL = ''
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '@l^73%xmq#e0_qe05b0e^2@3e+k=&a6x&*@9zogsz)mn#j@2-a'
@@ -97,12 +97,7 @@ INSTALLED_APPS = (
 	'django.contrib.sites',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
-	
-	# Admin
-	# Uncomment the next line to enable the admin:
 	'django.contrib.admin',
-	# Uncomment the next line to enable admin documentation:
-	# 'django.contrib.admindocs',
 	
 	# Other libraries
 	'registration',
@@ -112,23 +107,78 @@ INSTALLED_APPS = (
 	'loudmouth.web',
 )
 
-STATICFILES_DIRS = (next_to_this_file('smedia'), )
 
 STATIC_ROOT = next_to_this_file('static')
-
 STATIC_URL = '/static/'
 
 TEST_EXCLUDE = (
 	'registration',
 )
 
-ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window;
-EMAIL_HOST = 'localhost'
-DEFAULT_FROM_EMAIL = ADMINS[0][1]
 LOGIN_REDIRECT_URL = '/'
 
-import logging
-LOGGER_LEVEL = logging.INFO
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window;
+EMAIL_HOST = 'localhost'
+DEFAULT_FROM_EMAIL = 'loudmouth@example.com'
+
+
+LOGGING = {
+	'version': 1,
+	'disable_existing_loggers': True,
+	'formatters': {
+		'standard': {
+			'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+		},
+	},
+	'handlers': {
+		'default': {
+			'level': 'DEBUG',
+			'class': 'logging.handlers.RotatingFileHandler',
+			'filename': 'logs/loudmouth.log',
+			'maxBytes': 1024*1024*100, # 100 MB
+			'backupCount': 5,
+			'formatter': 'standard',
+		},
+		'db_handler': {
+			'level': 'DEBUG',
+			'class': 'logging.handlers.RotatingFileHandler',
+			'filename': 'logs/db.log',
+			'maxBytes': 1024*1024*100, # 100 MB
+			'backupCount': 5,
+			'formatter': 'standard',
+		},
+		'request_handler': {
+			'level': 'DEBUG',
+			'class': 'logging.handlers.RotatingFileHandler',
+			'filename': 'logs/django_request.log',
+			'maxBytes': 1024*1024*100, # 100 MB
+			'backupCount': 5,
+			'formatter': 'standard',
+		},
+		'mail_admins': {
+			'level': 'ERROR',
+			'class': 'django.utils.log.AdminEmailHandler',
+			'include_html': True,
+		}
+	},
+	'loggers': {
+		'': {
+			'handlers': ['default'],
+			'level': 'DEBUG',
+			'propagate': True,
+		},
+		'django.db.backends': {
+			'handlers': ['db_handler'],
+			'level': 'DEBUG',
+			'propagate': False,
+		},
+		'django.request': {
+			'handlers': ['request_handler', 'mail_admins'],
+			'level': 'DEBUG',
+			'propagate': False,
+		},
+	}
+}
 
 try:
 	from localsettings import *

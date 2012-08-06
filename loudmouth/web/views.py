@@ -32,13 +32,13 @@ def index(request):
 	
 	context = {
 		'show_all': show_all,
-		'emails': IncomingEmail.get_user_emails(request.user, show_all=show_all),
+		'emails': IncomingEmail.objects.get_user_emails(request.user, show_all=show_all),
 	}
 	return render_to_response('index.html', context, RequestContext(request))
 
 @login_required
 def hallofshame(request):
-	shamers = EmailRating.get_shamers()
+	shamers = EmailRating.objects.get_shamers()
 	if shamers:
 		high_shamer = shamers[0]
 	else:

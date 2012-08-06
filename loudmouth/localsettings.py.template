@@ -25,3 +25,7 @@ EMAIL_LISTS = []
 # Example:
 # EMAIL_LISTS = ['ny-office@example.com', 'staff@example.com']
 
+# Some email specific settings (if you want)
+#ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window;
+#EMAIL_HOST = 'localhost'
+DEFAULT_FROM_EMAIL = ADMINS[0][1]

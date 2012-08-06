@@ -1,21 +1,16 @@
-# General
+
 import email.utils as email_utils
 import logging
 import operator
 import time
 
-# Library
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
 
-# Project
 from loudmouth.core.mailgrabber.imap import MailGrabberImap
 from loudmouth.core.models_static import *
 
-
-# Environment
-logging.basicConfig(level = settings.LOGGER_LEVEL)
 logger = logging.getLogger(__name__)
 
 
@@ -39,23 +34,10 @@ summary.decode('unicode_escape')
 
 Solutions via: http://stackoverflow.com/questions/2108824/mysql-incorrect-string-value-error-when-save-unicode-string-in-django
 '''
-
-class IncomingEmail(models.Model):
-	external_id = models.CharField(max_length=255, unique=True)
-	thread = models.ForeignKey(EmailThread)
-	on_email_list = models.BooleanField()
-	timestamp = models.DateTimeField()
-	title = models.CharField(max_length=255)
-	author_name = models.CharField(max_length=255)
-	author_email = models.CharField(max_length=255)
-	summary = models.TextField()
 	
-	# Decided we're not gonna store this for now
-	#raw_message = models.TextField()
-
+class IncomingEmailManager(models.Manager):
 	
-	@staticmethod
-	def flush():
+	def flush(self):
 		logger.info("IncomingEmail::flush() started...")
 		
 		logger.info("Grabbing all new emails via IMAP...")
@@ -116,8 +98,7 @@ class IncomingEmail(models.Model):
 		logger.info("IncomingEmail::flush() ended!")
 	
 	
-	@staticmethod
-	def get_user_emails(user, show_all=False, limit=None, offset=None):
+	def get_user_emails(self, user, show_all=False, limit=None, offset=None):
 		emails = []
 		
 		# TODO: implement limit/offset
@@ -147,6 +128,31 @@ class IncomingEmail(models.Model):
 			emails.append(email)
 		
 		return emails
+	
+
+class IncomingEmail(models.Model):
+	external_id = models.CharField(max_length=255, unique=True)
+	thread = models.ForeignKey(EmailThread)
+	on_email_list = models.BooleanField()
+	timestamp = models.DateTimeField()
+	title = models.CharField(max_length=255)
+	author_name = models.CharField(max_length=255)
+	author_email = models.CharField(max_length=255)
+	summary = models.TextField()
+	
+	# Decided we're not gonna store this for now
+	#raw_message = models.TextField()
+	
+	objects = IncomingEmailManager()
+
+
+class EmailRatingManager(models.Manager):
+	def get_shamers(self):
+		shamers = {}
+		ratings = EmailRating.objects.all()
+		for rating in ratings:
+			shamers[rating.email.author_email] = shamers.get(rating.email.author_email, 0) + rating.rating
+		return sorted(shamers.iteritems(), key=operator.itemgetter(1), reverse=True)
 
 
 class EmailRating(models.Model):
@@ -155,14 +161,7 @@ class EmailRating(models.Model):
 	rating = models.IntegerField(choices=EMAIL_RATINGS, default=EMAIL_RATING_OK)
 	timestamp = models.DateTimeField(auto_now=True)
 	
+	objects = EmailRatingManager()
+	
 	class Meta:
 		unique_together = (('user', 'email'),)
-	
-	
-	@staticmethod
-	def get_shamers():
-		shamers = {}
-		ratings = EmailRating.objects.all()
-		for rating in ratings:
-			shamers[rating.email.author_email] = shamers.get(rating.email.author_email, 0) + rating.rating
-		return sorted(shamers.iteritems(), key=operator.itemgetter(1), reverse=True)
